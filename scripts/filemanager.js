@@ -24,15 +24,22 @@ $.urlParam = function(name){
   Setup, Layout, and Status Functions
 ---------------------------------------------------------*/
 
+// We prepend baseUrl when constructing a request url, thus
+// allowing the default loading of resources to be overridden.
+if (typeof Filemanager === 'undefined') {
+	Filemanager = {baseurl: './'};
+}
+var baseUrl = Filemanager.baseurl || './';
+
 // We retrieve config settings from filemanager.config.js
 var loadConfigFile = function (type) {
 	var json = null;
 	type = (typeof type === "undefined") ? "user" : type;
 	
 	if(type == 'user') {
-		var url = './scripts/filemanager.config.js';
+		var url = baseUrl + 'scripts/filemanager.config.js';
 	} else {
-		var url = './scripts/filemanager.config.js.default'
+		var url = baseUrl + 'scripts/filemanager.config.js.default'
 	}
     
     $.ajax({
@@ -89,7 +96,7 @@ loadJS = function(src) {
 
 
 // Sets paths to connectors based on language selection.
-var fileConnector = config.options.fileConnector || 'connectors/' + config.options.lang + '/filemanager.' + config.options.lang;
+var fileConnector = config.options.fileConnector || baseUrl + 'connectors/' + config.options.lang + '/filemanager.' + config.options.lang;
 
 // Read capabilities from config files if exists
 // else apply default settings
@@ -101,7 +108,7 @@ if($.urlParam('langCode') != 0 && file_exists ('scripts/languages/'  + $.urlPara
 
 var lg = [];
 $.ajax({
-  url: 'scripts/languages/'  + config.options.culture + '.js',
+  url: baseUrl + 'scripts/languages/'  + config.options.culture + '.js',
   async: false,
   dataType: 'json',
   success: function (json) {
@@ -1301,7 +1308,7 @@ var getFolderInfo = function(path) {
 	setUploader(path);
 
 	// Display an activity indicator.
-	var loading = '<img id="activity" src="themes/' + config.options.theme + '/images/wait30trans.gif" width="30" height="30" />';
+	var loading = '<img id="activity" src="' + baseUrl + 'themes/' + config.options.theme + '/images/wait30trans.gif" width="30" height="30" />';
 	
 	// test if scrollbar plugin is enabled
 	if ($('#fileinfo .mCSB_container').length > 0) {
@@ -1533,9 +1540,9 @@ $(function(){
 	$('div.version').html(config.version);
 
 	// Loading theme
-	loadCSS('./themes/' + config.options.theme + '/styles/filemanager.css');
+	loadCSS(baseUrl + 'themes/' + config.options.theme + '/styles/filemanager.css');
 	$.ajax({
-	    url:'./themes/' + config.options.theme + '/styles/ie.css',
+	    url: baseUrl + 'themes/' + config.options.theme + '/styles/ie.css',
 	    async: false,
 	    success: function(data)
 	    {
@@ -1544,15 +1551,15 @@ $(function(){
 	});
 	
 	// loading zeroClipboard
-	loadJS('./scripts/zeroclipboard/dist/ZeroClipboard.js');
+	loadJS(baseUrl + 'scripts/zeroclipboard/dist/ZeroClipboard.js');
 	
 	// Loading CodeMirror if enabled for online edition
 	if(config.edit.enabled) {
-		loadCSS('./scripts/CodeMirror/lib/codemirror.css');
-		loadCSS('./scripts/CodeMirror/theme/' + config.edit.theme + '.css');
-		loadJS('./scripts/CodeMirror/lib/codemirror.js');
-		loadJS('./scripts/CodeMirror/addon/selection/active-line.js');
-		loadJS('./scripts/CodeMirror/dynamic-mode.js');
+		loadCSS(baseUrl + 'scripts/CodeMirror/lib/codemirror.css');
+		loadCSS(baseUrl + 'scripts/CodeMirror/theme/' + config.edit.theme + '.css');
+		loadJS(baseUrl + 'scripts/CodeMirror/lib/codemirror.js');
+		loadJS(baseUrl + 'scripts/CodeMirror/addon/selection/active-line.js');
+		loadJS(baseUrl + 'scripts/CodeMirror/dynamic-mode.js');
 	}
 
 	if(!config.options.fileRoot) {
@@ -1679,8 +1686,8 @@ $(function(){
 	if(config.upload.multiple) {
 		
 		// we load dropzone library 
-		loadCSS('./scripts/dropzone/downloads/css/dropzone.css');
-		loadJS('./scripts/dropzone/downloads/dropzone.js');
+		loadCSS(baseUrl + 'scripts/dropzone/downloads/css/dropzone.css');
+		loadJS(baseUrl + 'scripts/dropzone/downloads/dropzone.js');
 		Dropzone.autoDiscover = false;
 		
 		// we remove simple file upload element
@@ -1869,8 +1876,8 @@ $(function(){
 	// Loading CustomScrollbar if enabled
 	// Important, the script should be called after calling createFileTree() to prevent bug 
 	if(config.customScrollbar.enabled) {
-		loadCSS('./scripts/custom-scrollbar-plugin/jquery.mCustomScrollbar.min.css');
-		loadJS('./scripts/custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js');
+		loadCSS(baseUrl + 'scripts/custom-scrollbar-plugin/jquery.mCustomScrollbar.min.css');
+		loadJS(baseUrl + 'scripts/custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js');
 		
 		var csTheme = config.customScrollbar.theme != undefined ? config.customScrollbar.theme : 'inset-2-dark';
 		var csButton = config.customScrollbar.button != undefined ? config.customScrollbar.button : true;
