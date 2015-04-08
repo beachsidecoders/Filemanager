@@ -1341,11 +1341,14 @@ var getFolderInfo = function(path) {
 				result += '<ul id="contents" class="grid">';
 				
 				for(key in data){
+					if (!data.hasOwnProperty(key)) {
+						continue;
+					}
 					counter++;
 					var props = data[key]['Properties'];
 					var cap_classes = "";
 					for (cap in capabilities) {
-						if (has_capability(data[key], capabilities[cap])) {
+						if (capabilities.hasOwnProperty(cap) && has_capability(data[key], capabilities[cap])) {
 							cap_classes += " cap_" + capabilities[cap];
 						}
 					}
@@ -1372,6 +1375,9 @@ var getFolderInfo = function(path) {
 				result += '<tbody>';
 				
 				for(key in data){
+					if (!data.hasOwnProperty(key)) {
+                                                continue;
+                                        }
 					counter++;
 					var path = data[key]['Path'];
 					var props = data[key]['Properties'];
@@ -1379,7 +1385,7 @@ var getFolderInfo = function(path) {
 					config.options.showTitleAttr ? title = ' title="' + data[key]['Path'] + '"' : title = '';
 					
 					for (cap in capabilities) {
-						if (has_capability(data[key], capabilities[cap])) {
+						if (capabilities.hasOwnProperty(cap) && has_capability(data[key], capabilities[cap])) {
 							cap_classes += " cap_" + capabilities[cap];
 						}
 					}
@@ -1492,10 +1498,13 @@ var populateFileTree = function(path, callback) {
 		if(data) {
 			result += "<ul class=\"jqueryFileTree\" style=\"display: none;\">";
 			for(key in data) {
+				if (!data.hasOwnProperty(key)) {
+                                                continue;
+                                }
 				var cap_classes = "";
 				
 				for (cap in capabilities) {
-					if (has_capability(data[key], capabilities[cap])) {
+					if (capabilities.hasOwnProperty(cap) && has_capability(data[key], capabilities[cap])) {
 						cap_classes += " cap_" + capabilities[cap];
 					}
 				}
