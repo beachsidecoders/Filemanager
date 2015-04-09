@@ -35,17 +35,22 @@ class Filemanager {
 	public function __construct($extraConfig = '') {
 		
 		// getting default config file
-		$content = file_get_contents("../../scripts/filemanager.config.js.default");
+		$content = file_get_contents(__DIR__."/../../scripts/filemanager.config.js.default");
 		$config_default = json_decode($content, true);
 		
-		// getting user config file
-		$content = file_get_contents("../../scripts/filemanager.config.js");
-		$config = json_decode($content, true);
-		
-		if(!$config) {
-			$this->error("Error parsing the settings file! Please check your JSON syntax.");
+		$userConfigFilePath = __DIR__."/../../scripts/filemanager.config.js";
+		if (file_exists($userConfigFilePath)) {
+			// getting user config file
+			$content = file_get_contents($userConfigFilePath);
+			$config = json_decode($content, true);
+
+			if(!$config) {
+				$this->error("Error parsing the settings file! Please check your JSON syntax.");
+			}
+			$this->config = array_replace_recursive ($config_default, $config);
+		} else {
+			$this->config = $config_default;
 		}
-		$this->config = array_replace_recursive ($config_default, $config);
 
 		// override config options if needed
 		if(!empty($extraConfig)) {
