@@ -70,12 +70,12 @@ if(!isset($_GET)) {
         break;
 
       case 'editfile':
-        	 
+
         if($fm->getvar('path')) {
         	$response = $fm->editfile();
         }
         break;
-        
+
       case 'delete':
 
         if($fm->getvar('path')) {
@@ -134,7 +134,7 @@ if(!isset($_GET)) {
 	    		$fm->replace();
 	    	}
 	    	break;
-    
+
 	    case 'savefile':
 	    	
 	    	if($fm->postvar('content', false) && $fm->postvar('path')) {
