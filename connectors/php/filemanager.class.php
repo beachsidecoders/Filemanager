@@ -332,14 +332,14 @@ class Filemanager {
 				'Path'=>$this->get['path'],
 				'Content'=>$this->formatPath($content)
 		);
-		
+
 		return $array;
 	}
 
 	public function savefile() {
-	
+
 		$current_path = $this->getFullPath($this->post['path']);
-	
+
 		if(!$this->has_permission('edit') || !$this->is_valid_path($current_path) || !$this->is_editable($current_path)) {
 			$this->error("No way.");
 		}
@@ -347,22 +347,22 @@ class Filemanager {
 		if(!$this->has_system_permission($current_path, array('w'))) {
 			$this->error(sprintf($this->lang('ERROR_WRITING_PERM')));
 		}
-		
+
 		$this->__log(__METHOD__ . ' - saving file '. $current_path);
-		
+
 		$content =  htmlspecialchars_decode($this->post['content']);
 		$r = file_put_contents($current_path, $content, LOCK_EX);
 
 		if(!is_numeric($r)) {
 			$this->error(sprintf($this->lang('ERROR_SAVING_FILE')));
 		}
-	
+
 		$array = array(
 					'Error'=>"",
 					'Code'=>0,
 					'Path'=>$this->formatPath($this->post['path'])
 			);
-		
+
 		return $array;
 	}
 
@@ -384,17 +384,17 @@ class Filemanager {
 		if(!$this->has_permission('rename') || !$this->is_valid_path($old_file)) {
 			$this->error("No way.");
 		}
-		
+
 		// check if file is writable
 		if(!$this->has_system_permission($old_file, array('w'))) {
 			$this->error(sprintf($this->lang('NOT_ALLOWED_SYSTEM')));
 		}
-		
+
 		// check if not requesting main FM userfiles folder
 		if($this->is_root_folder($old_file)) {
 			$this->error(sprintf($this->lang('NOT_ALLOWED')));
 		}
-		
+
 		// For file only - we check if the new given extension is allowed regarding the security Policy settings
 		if(is_file($old_file) && $this->config['security']['allowChangeExtensions'] && !$this->is_allowed_file_type($new_file)) {
 			$this->error(sprintf($this->lang('INVALID_FILE_TYPE')));
@@ -597,12 +597,12 @@ class Filemanager {
 		if($_FILES['fileR']['size'] > ($this->config['upload']['fileSizeLimit'] * 1024 * 1024)) {
 			$this->error(sprintf($this->lang('UPLOAD_FILES_SMALLER_THAN'),$this->config['upload']['fileSizeLimit'] . $this->lang('mb')),true);
 		}
-		
+
 		// we check the given file has the same extension as the old one
 		if(strtolower(pathinfo($_FILES['fileR']['name'], PATHINFO_EXTENSION)) != strtolower(pathinfo($this->post['newfilepath'], PATHINFO_EXTENSION))) {
 			$this->error(sprintf($this->lang('ERROR_REPLACING_FILE') . ' '. pathinfo($this->post['newfilepath'], PATHINFO_EXTENSION)),true);
 		}
-		
+
 		if(!$this->is_allowed_file_type($_FILES['fileR']['name'])) {
 			$this->error(sprintf($this->lang('INVALID_FILE_TYPE')),true);
 		}
@@ -1206,12 +1206,12 @@ private function is_allowed_file_type($file) {
 	$exts = array_map('strtolower', $this->config['security']['uploadRestrictions']);
 	
 	if($this->config['security']['uploadPolicy'] == 'DISALLOW_ALL') {
-			
+
 		if(!in_array(strtolower($path_parts['extension']), $exts))
 			return false;
 	}
 	if($this->config['security']['uploadPolicy'] == 'ALLOW_ALL') {
-	
+
 		if(in_array(strtolower($path_parts['extension']), $exts))
 			return false;
 	}
