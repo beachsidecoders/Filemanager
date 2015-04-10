@@ -1018,7 +1018,8 @@ class Filemanager {
 			if($this->item['filetype'] == 'svg') {
 				$this->item['preview'] = $current_path;
 			} else {
-				$this->item['preview'] = 'connectors/php/filemanager.php?mode=preview&path='. rawurlencode($current_path).'&'. time();
+				$connectorBaseUrl = (isset($this->config['connector']['baseurl'])) ? $this->config['connector']['baseurl'] : '';
+				$this->item['preview'] = $connectorBaseUrl . 'connectors/php/filemanager.php?mode=preview&path='. rawurlencode($current_path).'&'. time();
 				if($thumbnail) $this->item['preview'] .= '&thumbnail=true';
 			}
 			//if(isset($get['getsize']) && $get['getsize']=='true') {
