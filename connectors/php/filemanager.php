@@ -17,7 +17,7 @@
 require_once('filemanager.class.php');
 
 // if user file is defined we include it, else we include the default file
-(file_exists('user.config.php')) ? include_once('user.config.php') : include_once('default.config.php');
+(function_exists('filemanager_factory')) ? filemanager_factory() : ((file_exists('user.config.php')) ? include_once('user.config.php') : include_once('default.config.php'));
 
 // auth() function is already defined
 // and Filemanager is instantiated as $fm
