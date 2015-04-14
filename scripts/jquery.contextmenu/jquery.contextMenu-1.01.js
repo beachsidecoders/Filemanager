@@ -12,7 +12,7 @@
 // This plugin is dual-licensed under the GNU General Public License
 //   and the MIT License and is copyright A Beautiful Site, LLC.
 //
-if(jQuery)( function() {
+if(jQuery)( function($) {
 	$.extend($.fn, {
 		
 		contextMenu: function(o, callback) {
@@ -66,7 +66,20 @@ if(jQuery)( function() {
 							}
 							(e.pageX) ? x = e.pageX : x = e.clientX + d.scrollLeft;
 							(e.pageY) ? y = e.pageY : y = e.clientY + d.scrollTop;
-							
+
+
+							// Adjust the context menu postion relative to the first parent having a non static position css style.
+							var relativeElemOffset = { left: 0, top: 0 };
+							var menuParents = $(menu).parents();
+							for (var parentInx = 0; parentInx < menuParents.length; ++parentInx) {
+								if ($(menuParents[parentInx]).css('position') !== 'static') {
+									relativeElemOffset = $(menuParents[parentInx]).offset();
+									break;
+								}
+							}
+							x -= relativeElemOffset.left;
+							y -= relativeElemOffset.top;
+
 							// Show the menu
 							$(document).unbind('click');
 							$(menu).css({ top: y, left: x }).fadeIn(o.inSpeed);

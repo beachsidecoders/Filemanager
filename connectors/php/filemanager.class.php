@@ -35,17 +35,22 @@ class Filemanager {
 	public function __construct($extraConfig = '') {
 		
 		// getting default config file
-		$content = file_get_contents("../../scripts/filemanager.config.js.default");
+		$content = file_get_contents(__DIR__."/../../scripts/filemanager.config.js.default");
 		$config_default = json_decode($content, true);
 		
-		// getting user config file
-		$content = file_get_contents("../../scripts/filemanager.config.js");
-		$config = json_decode($content, true);
-		
-		if(!$config) {
-			$this->error("Error parsing the settings file! Please check your JSON syntax.");
+		$userConfigFilePath = __DIR__."/../../scripts/filemanager.config.js";
+		if (file_exists($userConfigFilePath)) {
+			// getting user config file
+			$content = file_get_contents($userConfigFilePath);
+			$config = json_decode($content, true);
+
+			if(!$config) {
+				$this->error("Error parsing the settings file! Please check your JSON syntax.");
+			}
+			$this->config = array_replace_recursive ($config_default, $config);
+		} else {
+			$this->config = $config_default;
 		}
-		$this->config = array_replace_recursive ($config_default, $config);
 
 		// override config options if needed
 		if(!empty($extraConfig)) {
@@ -332,14 +337,14 @@ class Filemanager {
 				'Path'=>$this->get['path'],
 				'Content'=>$this->formatPath($content)
 		);
-		
+
 		return $array;
 	}
 
 	public function savefile() {
-	
+
 		$current_path = $this->getFullPath($this->post['path']);
-	
+
 		if(!$this->has_permission('edit') || !$this->is_valid_path($current_path) || !$this->is_editable($current_path)) {
 			$this->error("No way.");
 		}
@@ -347,22 +352,22 @@ class Filemanager {
 		if(!$this->has_system_permission($current_path, array('w'))) {
 			$this->error(sprintf($this->lang('ERROR_WRITING_PERM')));
 		}
-		
+
 		$this->__log(__METHOD__ . ' - saving file '. $current_path);
-		
+
 		$content =  htmlspecialchars_decode($this->post['content']);
 		$r = file_put_contents($current_path, $content, LOCK_EX);
 
 		if(!is_numeric($r)) {
 			$this->error(sprintf($this->lang('ERROR_SAVING_FILE')));
 		}
-	
+
 		$array = array(
 					'Error'=>"",
 					'Code'=>0,
 					'Path'=>$this->formatPath($this->post['path'])
 			);
-		
+
 		return $array;
 	}
 
@@ -384,17 +389,17 @@ class Filemanager {
 		if(!$this->has_permission('rename') || !$this->is_valid_path($old_file)) {
 			$this->error("No way.");
 		}
-		
+
 		// check if file is writable
 		if(!$this->has_system_permission($old_file, array('w'))) {
 			$this->error(sprintf($this->lang('NOT_ALLOWED_SYSTEM')));
 		}
-		
+
 		// check if not requesting main FM userfiles folder
 		if($this->is_root_folder($old_file)) {
 			$this->error(sprintf($this->lang('NOT_ALLOWED')));
 		}
-		
+
 		// For file only - we check if the new given extension is allowed regarding the security Policy settings
 		if(is_file($old_file) && $this->config['security']['allowChangeExtensions'] && !$this->is_allowed_file_type($new_file)) {
 			$this->error(sprintf($this->lang('INVALID_FILE_TYPE')));
@@ -597,12 +602,12 @@ class Filemanager {
 		if($_FILES['fileR']['size'] > ($this->config['upload']['fileSizeLimit'] * 1024 * 1024)) {
 			$this->error(sprintf($this->lang('UPLOAD_FILES_SMALLER_THAN'),$this->config['upload']['fileSizeLimit'] . $this->lang('mb')),true);
 		}
-		
+
 		// we check the given file has the same extension as the old one
 		if(strtolower(pathinfo($_FILES['fileR']['name'], PATHINFO_EXTENSION)) != strtolower(pathinfo($this->post['newfilepath'], PATHINFO_EXTENSION))) {
 			$this->error(sprintf($this->lang('ERROR_REPLACING_FILE') . ' '. pathinfo($this->post['newfilepath'], PATHINFO_EXTENSION)),true);
 		}
-		
+
 		if(!$this->is_allowed_file_type($_FILES['fileR']['name'])) {
 			$this->error(sprintf($this->lang('INVALID_FILE_TYPE')),true);
 		}
@@ -1013,7 +1018,8 @@ class Filemanager {
 			if($this->item['filetype'] == 'svg') {
 				$this->item['preview'] = $current_path;
 			} else {
-				$this->item['preview'] = 'connectors/php/filemanager.php?mode=preview&path='. rawurlencode($current_path).'&'. time();
+				$connectorBaseUrl = (isset($this->config['connector']['baseurl'])) ? $this->config['connector']['baseurl'] : '';
+				$this->item['preview'] = $connectorBaseUrl . 'connectors/php/filemanager.php?mode=preview&path='. rawurlencode($current_path).'&'. time();
 				if($thumbnail) $this->item['preview'] .= '&thumbnail=true';
 			}
 			//if(isset($get['getsize']) && $get['getsize']=='true') {
@@ -1206,12 +1212,12 @@ private function is_allowed_file_type($file) {
 	$exts = array_map('strtolower', $this->config['security']['uploadRestrictions']);
 	
 	if($this->config['security']['uploadPolicy'] == 'DISALLOW_ALL') {
-			
+
 		if(!in_array(strtolower($path_parts['extension']), $exts))
 			return false;
 	}
 	if($this->config['security']['uploadPolicy'] == 'ALLOW_ALL') {
-	
+
 		if(in_array(strtolower($path_parts['extension']), $exts))
 			return false;
 	}
