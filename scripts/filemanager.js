@@ -1220,7 +1220,7 @@ var getFileInfo = function(file) {
 	setUploader(currentpath);
 
 	// Include the template.
-	var template = '<div id="preview"><img /><div id="main-title"><h1></h1><div id="tools"></div></div><dl></dl></div>';
+	var template = '<div id="preview"><img /><div id="main-title"><h1></h1><h2></h2><div id="tools"></div></div><dl></dl></div>';
 	template += '<form id="toolbar">';
 	template += '<button id="parentfolder">' + lg.parentfolder + '</button>';
 	if($.inArray('select', capabilities)  != -1 && ($.urlParam('CKEditor') || window.opener || window.tinyMCEPopup || $.urlParam('field_name'))) template += '<button id="select" name="select" type="button" value="Select">' + lg.select + '</button>';
@@ -1247,10 +1247,13 @@ var getFileInfo = function(file) {
 	
 	// Retrieve the data & populate the template.
 	var d = new Date(); // to prevent IE cache issues
+	var detailFileURLBase = Filemanager.detailviewfileurlbase || 'Path: ';
+	detailFileURLBase += displayPath(currentpath);
+
 	$.getJSON(fileConnector + '?mode=getinfo&path=' + encodeURIComponent(file) + '&time=' + d.getMilliseconds(), function(data){
 		if(data['Code'] == 0){
 			$('#fileinfo').find('h1').text(data['Filename']).attr('title', file);
-			
+			$('#fileinfo').find('h2').text(detailFileURLBase + data['Filename']);
 			$('#fileinfo').find('img').attr('src',data['Preview']);
 			if(isVideoFile(data['Filename']) && config.videos.showVideoPlayer == true) {
 				getVideoPlayer(data);
