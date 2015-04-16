@@ -1,3 +1,5 @@
+if(jQuery) (function($){
+
 $(document).ready(function() {
 	
 	ZeroClipboard.config( { swfPath: './scripts/zeroclipboard/dist/ZeroClipboard.swf' } );
@@ -16,3 +18,5 @@ $(document).ready(function() {
 	} );
 
 });
+
+})(jQuery);
