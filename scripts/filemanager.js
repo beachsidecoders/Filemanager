@@ -1275,7 +1275,7 @@ var getFileInfo = function(file) {
 				$('#fileinfo').find('div#tools').append(' <a id="copy-button" data-clipboard-text="'+ url + '" title="' + lg.copy_to_clipboard + '" href="#"><span>' + lg.copy_to_clipboard + '</span></a>');
 				// loading zeroClipboard code
 				
-				loadJS('./scripts/zeroclipboard/copy.js?d' + d.getMilliseconds());
+				loadJS(baseUrl + 'scripts/zeroclipboard/copy.js?d' + d.getMilliseconds());
 				$('#copy-button').click(function () {
 					$('#fileinfo').find('div#tools').append('<span id="copied">' + lg.copied + '</span>');
 					$('#copied').delay(500).fadeOut(1000, function() { $(this).remove(); });
